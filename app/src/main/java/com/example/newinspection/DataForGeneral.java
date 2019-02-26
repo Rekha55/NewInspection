@@ -12,6 +12,7 @@ public class DataForGeneral {
         List<String> General = new ArrayList<String>();
         General.add("Purpose");
         General.add("Bank / Valuation for");
+        General.add("Vehicle Plate Number");
         General.add("Contract No.");
         General.add("Request from");
         General.add("Asset Make");

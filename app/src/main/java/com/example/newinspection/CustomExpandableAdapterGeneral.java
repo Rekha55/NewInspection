@@ -2,23 +2,39 @@ package com.example.newinspection;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.icu.util.RangeValueIterator;
+import android.os.Build;
+import android.renderscript.Element;
+import android.support.annotation.RequiresApi;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class CustomExpandableAdapterGeneral extends BaseExpandableListAdapter {
-
+    //    EditText purposeEditText, bankValuationforEditText, contractNoEditText, requestFormEditText, assetMakeEditText, assetModelEditText, yearOfMfgEditText, repoDateEditText, rcAndFitnessEditText,
+//            hmrKmrEDitText, chassisNoEditText, engineNoEditText, rcNoEditText, inspectorEditText, locationEditText, rcStatusEditText, inspectionDateEditText, taxStatusEditText;
+    String purposeText, bankValuationforText, contractNoText, requestFormText, assetMakeText, assetModelText, yearOfMfgText, repoDateText, rcAndFitnessText,
+            hmrKmrText, chassisNoText, engineNoText, rcNoText, inspectorText, locationText, rcStatusText, inspectionDateText, taxStatusText;
+    String text;
+    View v;
+    TextView listGenerealText;
+    EditText listGeneralEditText;
     private List<String> listGeneralTitle;
     private Context context;
-    private HashMap<String,List<String>> listGeneralDetail;
+    private HashMap<String, List<String>> listGeneralDetail;
 
     public CustomExpandableAdapterGeneral(Context context, List<String> listCTBTitle,
-                                      HashMap<String, List<String>> listCTBDetail) {
+                                          HashMap<String, List<String>> listCTBDetail) {
         this.context = context;
         this.listGeneralTitle = listCTBTitle;
         this.listGeneralDetail = listCTBDetail;
@@ -34,19 +50,21 @@ public class CustomExpandableAdapterGeneral extends BaseExpandableListAdapter {
         return expandedListPosition;
     }
 
-    public View getChildView(int listPosition, final int expandedListPosition,
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public View getChildView(final int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
+
         final String expandedListText1 = (String) getChild(listPosition, expandedListPosition);
-
-
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_item_general, null);
         }
-        TextView listGenerealText = (TextView) convertView .findViewById(R.id.generalTextId);
-        //   TextView listCtbValue2 = (TextView) convertView .findViewById(R.id.ctbValue2Id);
-        listGenerealText.setText (expandedListText1);
+        listGenerealText = (TextView) convertView.findViewById(R.id.generalTextId);
+        listGeneralEditText = (EditText) convertView.findViewById(R.id.generalEditId);
+        listGenerealText.setText(expandedListText1);
+
+
 
         return convertView;
     }
@@ -78,8 +96,7 @@ public class CustomExpandableAdapterGeneral extends BaseExpandableListAdapter {
     }
 
 
-    public View getGroupView(int listPosition, boolean isExpanded,
-                             View convertView, ViewGroup parent) {
+    public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String listTitle = (String) getGroup(listPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context.
@@ -97,6 +114,5 @@ public class CustomExpandableAdapterGeneral extends BaseExpandableListAdapter {
     public boolean hasStableIds() {
         return false;
     }
-
 
 }

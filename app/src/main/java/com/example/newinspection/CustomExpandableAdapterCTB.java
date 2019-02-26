@@ -48,9 +48,10 @@ public class CustomExpandableAdapterCTB extends BaseExpandableListAdapter {
             convertView = layoutInflater.inflate(R.layout.list_item_ctb, null);
         }
         TextView listCtbValue1 = (TextView) convertView .findViewById(R.id.ctbValue1Id);
-    //   TextView listCtbValue2 = (TextView) convertView .findViewById(R.id.ctbValue2Id);
+       TextView listCtbValue2 = (TextView) convertView .findViewById(R.id.ctbValue2Id);
         listCtbValue1.setText (expandedListText1);
 
+        listCtbValue2.setText(itemsCTB[expandedListPosition]);
         return convertView;
     }
 

@@ -2,17 +2,31 @@ package com.example.newinspection;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,66 +38,30 @@ public class MainActivity extends AppCompatActivity {
     ExpandableListAdapter expandableListAdapterGeneral;
     List<String> expandableListTitle, expandableListTitleCTB, expandableListTitleGeneral;
     HashMap<String, List<String>> expandableListDetail, expandableListDetailCTB, expandableListDetailGeneral;
-
+    EditText editTextForGenerals;
+    String text;
+    View v;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+//        CustomExpandableAdapterGeneral GeneralAdapter= new CustomExpandableAdapterGeneral(this, expandableListTitleGeneral, expandableListDetailGeneral);
+//        int countChildGeneral=GeneralAdapter.getChildrenCount(0);
+//        for(int i=0;i<countChildGeneral;i++){
+//            text = editTextForGenerals.getText().toString();
+//            Log.d(i+" ", "---->"+text );
+//        }
         ExpandableSetForGenerals();
         ExpandableSetForCTB();
         ExpandableSetForParameters();
 
     }
 
-    public void OnSubmitNewInspection(View view){
-       // Intent pass
-    }
 
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//
-//        View rootView = inflater.inflate(R.layout.activity_main, container, false);
-//        expandableListViewCTB = (ExpandableListView) rootView.findViewById(R.id.expandableListViewCTB);
-//
-//        // preparing list data
-//        expandableListTitleCTB = new ArrayList<String>();
-//        expandableListDetailCTB = new HashMap<String, List<String>>();
-//
-//        // Adding child data
-//        expandableListTitleCTB.add("Rider and Trainer Info");
-//        expandableListTitleCTB.add("Horse and Owner Info");
-//
-//        // Adding child data
-//        ListData1CTB = new ArrayList<String>();
-//        ListData1CTB.add("horse");
-//
-//        ListData2CTB = new ArrayList<String>();
-//
-//
-//        expandableListDetailCTB.put(expandableListTitleCTB.get(0), ListData1CTB); // Header, Child data
-//        expandableListDetailCTB.put(expandableListTitleCTB.get(1), ListData2CTB);
-//
-//        Context context = this.getApplicationContext();
-//        expandableListAdapterCTB = new CustomExpandableAdapterCTB(context, expandableListTitleCTB, expandableListDetailCTB);
-//
-//        // setting list adapter
-//        expandableListViewCTB.setAdapter(expandableListAdapterCTB);
-//
-//
-//
-//        value1 = (TextView) rootView.findViewById(R.id.ctbValue1Id);
-//        value2 = (TextView) rootView.findViewById(R.id.ctbValue2Id);
-//        value1.setText("Expired On: " + paid);
-//        value2.setText("Email: " + email);
-//        return rootView;
-//
-//    }
+
 
     public void ExpandableSetForGenerals() {
+
         expandableListViewGeneral = (ExpandableListView) findViewById(R.id.expandableListViewGeneralInputs);
         expandableListDetailGeneral = DataForGeneral.getData();
         expandableListTitleGeneral = new ArrayList<String>(expandableListDetailGeneral.keySet());
@@ -214,6 +192,62 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    public void OnSubmitNewInspection(View view){
+        editTextForGenerals = (EditText)findViewById(R.id.generalEditId);
+        text=editTextForGenerals.getText().toString();
+
+
+
+        createPdf(text);
+
+
+        final Intent iSubmitNewInspection= new Intent(MainActivity.this,DisplayReport.class);
+        startActivity(iSubmitNewInspection);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private void createPdf(String text){
+        // create a new document
+        PdfDocument document = new PdfDocument();
+        // crate a page description
+
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(300, 600, 1).create();
+        // start a page
+        PdfDocument.Page page = document.startPage(pageInfo);
+
+        Canvas canvas = page.getCanvas();
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+
+        canvas.drawText(text, 20, 60, paint);
+        // canvas.drawText(description,1,20,20.0f,30.0f,paint);
+        //canvas.drawt
+        // finish the page
+        document.finishPage(page);
+// draw text on the graphics object of the page
+
+        // write the document content
+        String directory_path = Environment.getExternalStorageDirectory().getPath() + "/Valuation Reports/";
+       Log.d("data -------->", directory_path);
+        File file = new File(directory_path);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+
+        String targetPdf = directory_path+currentDateTimeString+".pdf";
+        File filePath = new File(targetPdf);
+        try {
+            document.writeTo(new FileOutputStream(filePath));
+            Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Log.e("main", "error "+e.toString());
+            Toast.makeText(this, "Something wrong: " + e.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+        // close the document
+        document.close();
     }
 
 
