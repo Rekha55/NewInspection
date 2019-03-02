@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -14,12 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class CustomExpandableAdapterParameters extends BaseExpandableListAdapter {
-
+    ImageButton imgbtn;
     private Context context;
     private List<String> expandableListTitle;
     private HashMap<String, List<String>> expandableListDetail;
-    String[] items = new String[]{"Applicable","Not Applicable", "Average Condition","Available","Found",
-            "not Available","Appears to be in Average Condition", "Missing"};
+    String[] items = new String[]{"Applicable", "Not Applicable", "Average Condition", "Available", "Found",
+            "not Available", "Appears to be in Average Condition", "Missing"};
+    String text;
+    Spinner listChildSpinner;
 
     public CustomExpandableAdapterParameters(Context context, List<String> expandableListTitle,
                                              HashMap<String, List<String>> expandableListDetail) {
@@ -30,8 +33,8 @@ public class CustomExpandableAdapterParameters extends BaseExpandableListAdapter
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition))
-                .get(expandedListPosition);
+        return this.expandableListDetail.get (this.expandableListTitle.get (listPosition))
+                .get (expandedListPosition);
     }
 
     @Override
@@ -42,37 +45,38 @@ public class CustomExpandableAdapterParameters extends BaseExpandableListAdapter
     @Override
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
-        final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+
+        final String expandedListText = (String) getChild (listPosition, expandedListPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_item, null);
+                    .getSystemService (Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate (R.layout.list_item, null);
         }
         TextView listChildTextView = (TextView) convertView
-                .findViewById(R.id.listChildTextId);
-        Spinner listChildSpinner =(Spinner)convertView.findViewById (R.id.listChildSpinnerId);
-
-        listChildTextView.setText(expandedListText);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, items);
-        listChildSpinner.setAdapter(adapter);
+                .findViewById (R.id.listChildTextId);
+        listChildSpinner = (Spinner) convertView.findViewById (R.id.listChildSpinnerId);
+        //imgbtn=(ImageButton)convertView.findViewById (R.id.listChildSpinnerId);
+        listChildTextView.setText (expandedListText);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String> (context, android.R.layout.simple_spinner_dropdown_item, items);
+        listChildSpinner.setAdapter (adapter);
 
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int listPosition) {
-        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition))
-                .size();
+        return this.expandableListDetail.get (this.expandableListTitle.get (listPosition))
+                .size ();
     }
 
     @Override
     public Object getGroup(int listPosition) {
-        return this.expandableListTitle.get(listPosition);
+        return this.expandableListTitle.get (listPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this.expandableListTitle.size();
+        return this.expandableListTitle.size ();
     }
 
     @Override
@@ -83,16 +87,16 @@ public class CustomExpandableAdapterParameters extends BaseExpandableListAdapter
     @Override
     public View getGroupView(int listPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
-        String listTitle = (String) getGroup(listPosition);
+        String listTitle = (String) getGroup (listPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context.
-                    getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_group, null);
+                    getSystemService (Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate (R.layout.list_group, null);
         }
         TextView listTitleTextView = (TextView) convertView
-                .findViewById(R.id.listGroupId);
-        listTitleTextView.setTypeface(null, Typeface.BOLD);
-        listTitleTextView.setText(listTitle);
+                .findViewById (R.id.listGroupId);
+        listTitleTextView.setTypeface (null, Typeface.BOLD);
+        listTitleTextView.setText (listTitle);
         return convertView;
     }
 

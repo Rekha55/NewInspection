@@ -1,6 +1,5 @@
 package com.example.newinspection;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,12 +11,12 @@ import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    String purposeText, bankValuationforText, contractNoText, requestFormText, assetMakeText, assetModelText, yearOfMfgText, repoDateText, rcAndFitnessText,
+            hmrKmrText, chassisNoText, engineNoText, rcNoText, inspectorText, locationText, rcStatusText, inspectionDateText, taxStatusText;
 
     ExpandableListView expandableListViewParameters, expandableListViewCTB, expandableListViewGeneral;
     ExpandableListAdapter expandableListAdapter;
@@ -39,23 +40,34 @@ public class MainActivity extends AppCompatActivity {
     List<String> expandableListTitle, expandableListTitleCTB, expandableListTitleGeneral;
     HashMap<String, List<String>> expandableListDetail, expandableListDetailCTB, expandableListDetailGeneral;
     EditText editTextForGenerals;
-    String text;
+    TextView tvGeneral,tvParameters,tvCTBtitle,tvCTBdetail;
+    ImageButton imgbtn;
+    Spinner spinnerParameters;
+
     View v;
+    List<String> dataOfSpinner;
+    String[] itemOfSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        CustomExpandableAdapterGeneral GeneralAdapter= new CustomExpandableAdapterGeneral(this, expandableListTitleGeneral, expandableListDetailGeneral);
-//        int countChildGeneral=GeneralAdapter.getChildrenCount(0);
-//        for(int i=0;i<countChildGeneral;i++){
-//            text = editTextForGenerals.getText().toString();
-//            Log.d(i+" ", "---->"+text );
-//        }
+
+        TypeCast();
         ExpandableSetForGenerals();
         ExpandableSetForCTB();
         ExpandableSetForParameters();
 
     }
+    public void TypeCast(){
+        editTextForGenerals = (EditText)findViewById(R.id.generalEditId);
+        tvCTBdetail=(TextView)findViewById (R.id.ctbValue2Id);
+        tvCTBtitle=(TextView)findViewById (R.id.ctbValue1Id);
+        tvGeneral=(TextView)findViewById (R.id.generalTextId);
+        tvParameters=(TextView)findViewById (R.id.listChildTextId);
+        imgbtn=(ImageButton)findViewById (R.id.imageButtonNewInspection);
+
+  }
+
 
 
 
@@ -81,9 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onGroupCollapse(int groupPosition) {
-                Toast.makeText(getApplicationContext(),
-                        expandableListTitleGeneral.get(groupPosition) + " List Collapsed.",
-                        Toast.LENGTH_SHORT).show();
+               Log.d ("collapse--->"," "+ expandableListDetailGeneral.get (1));
 
             }
         });
@@ -171,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onGroupCollapse(int groupPosition) {
                 Toast.makeText(getApplicationContext(),
-                        expandableListTitle.get(groupPosition) + " List Collapsed.",
+                        expandableListTitle + " List Collapsed.",
                         Toast.LENGTH_SHORT).show();
 
             }
@@ -195,13 +205,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void OnSubmitNewInspection(View view){
-        editTextForGenerals = (EditText)findViewById(R.id.generalEditId);
-        text=editTextForGenerals.getText().toString();
 
 
-
-        createPdf(text);
-
+        createPdf(editTextForGenerals.getText ().toString ());
 
         final Intent iSubmitNewInspection= new Intent(MainActivity.this,DisplayReport.class);
         startActivity(iSubmitNewInspection);
@@ -240,15 +246,44 @@ public class MainActivity extends AppCompatActivity {
         File filePath = new File(targetPdf);
         try {
             document.writeTo(new FileOutputStream(filePath));
-            Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+
         } catch (IOException e) {
             Log.e("main", "error "+e.toString());
-            Toast.makeText(this, "Something wrong: " + e.toString(),
-                    Toast.LENGTH_LONG).show();
+
         }
         // close the document
         document.close();
     }
 
+    class ViewHolder {
+        //Log.e("text view",txtListChild.toString());
+        TextView lblListHeader;
+        HashMap<Integer, HashMap<Integer, View>> multiHash = new HashMap<>();
+        HashMap<Integer, View> innerHashMap;
 
+
+        public ViewHolder(View v) {
+            innerHashMap = new HashMap<>();
+            lblListHeader = v.
+                    findViewById(R.id.listGroupId);
+
+
+        }
+
+        public View getInnerView(int pos, int groupPos) {
+            return multiHash.get(groupPos).get(pos);
+        }
+
+
+//        lblListHeader.setTypeface(null, Typeface.BOLD);
+//        lblListHeader.setText(headerTitle.getCatName());
+
+        public void setInnerView(int pos, int groupPos, View innerView) {
+
+            innerHashMap.put(pos, innerView);
+            multiHash.put(groupPos, innerHashMap);
+
+
+        }
+    }
 }
